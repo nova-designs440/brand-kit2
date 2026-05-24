@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brand Kit Generator — AI Powered</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --dark: #070709;
+    --dark-2: #0F0F14;
+    --dark-3: #1A1A24;
+    --border: rgba(201,168,76,0.15);
+    --text: #F0EDE6;
+    --text-muted: rgba(240,237,230,0.5);
+    --text-dim: rgba(240,237,230,0.25);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+  .container { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+  .header { text-align: center; margin-bottom: 3rem; }
+  .eyebrow {
+    font-size: 10px; font-weight: 500; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px;
+  }
+  .eyebrow::before, .eyebrow::after { content: ''; width: 40px; height: 0.5px; background: var(--gold); opacity: 0.5; }
+  .header h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(36px,6vw,52px); font-weight: 300; letter-spacing: -0.5px; line-height: 1.1; margin-bottom: 0.75rem; }
+  .header p { font-size: 14px; color: var(--text-muted); }
+
+  /* Free counter badge */
+  .free-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(201,168,76,0.08); border: 0.5px solid var(--border);
+    border-radius: 20px; padding: 6px 16px; margin-top: 1rem;
+    font-size: 13px; color: var(--gold);
+  }
+  .free-dots { display: flex; gap: 4px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); opacity: 0.25; transition: opacity 0.3s; }
+  .dot.used { opacity: 1; }
+
+  .card {
+    background: var(--dark-2); border: 0.5px solid var(--border);
+    border-radius: var(--radius); padding: 1.75rem; margin-bottom: 1.25rem;
+    position: relative; overflow: hidden;
+  }
+  .card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent);
+  }
+  .card-label {
+    font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 8px;
+  }
+  .card-label::after { content: ''; flex: 1; height: 0.5px; background: var(--border); }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); gap: 1rem; margin-bottom: 1rem; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 10px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: var(--text-muted); }
+  .field input, .field select, .field textarea {
+    background: var(--dark-3); border: 0.5px solid rgba(240,237,230,0.1);
+    border-radius: var(--radius-sm); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 300;
+    padding: 11px 14px; outline: none; transition: border-color 0.2s;
+    -webkit-appearance: none; appearance: none;
+  }
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A84C' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(201,168,76,0.4); }
+  .field textarea { resize: none; height: 80px; }
+
+  .vibe-wrap { display: flex; gap: 6px; flex-wrap: wrap; }
+  .vibe-btn {
+    padding: 6px 14px; border: 0.5px solid rgba(240,237,230,0.12); border-radius: 20px;
+    background: transparent; color: var(--text-muted); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 300; cursor: pointer; transition: all 0.2s;
+  }
+  .vibe-btn:hover { border-color: rgba(201,168,76,0.3); color: var(--text); }
+  .vibe-btn.on { background: rgba(201,168,76,0.12); border-color: rgba(201,168,76,0.5); color: var(--gold); }
+
+  .gen-btn {
+    width: 100%; padding: 15px; background: var(--gold); border: none;
+    border-radius: var(--radius-sm); color: var(--dark);
+    font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500;
+    letter-spacing: 1px; cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 1.25rem;
+  }
+  .gen-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .gen-btn:active { transform: translateY(0); }
+  .gen-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  .prog { width: 100%; height: 2px; background: var(--dark-3); border-radius: 2px; margin-top: 1rem; display: none; }
+  .prog.on { display: block; }
+  .prog-inner { height: 100%; background: var(--gold); border-radius: 2px; width: 0; transition: width 0.25s ease; }
+
+  .err { color: #ff6b6b; font-size: 13px; padding: 10px 14px; background: rgba(255,107,107,0.08); border: 0.5px solid rgba(255,107,107,0.2); border-radius: var(--radius-sm); margin-top: 10px; display: none; line-height: 1.5; }
+
+  /* Paywall */
+  .paywall {
+    text-align: center; padding: 2.5rem 1.5rem;
+  }
+  .paywall h2 { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; margin-bottom: 0.75rem; }
+  .paywall p { font-size: 14px; color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.7; }
+  .pay-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--gold); color: var(--dark); border: none; border-radius: var(--radius-sm);
+    font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 500;
+    padding: 14px 32px; cursor: pointer; transition: opacity 0.2s, transform 0.15s; letter-spacing: 0.5px;
+  }
+  .pay-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .pay-note { font-size: 12px; color: var(--text-dim); margin-top: 1rem; }
+
+  /* Results */
+  .logo-box {
+    display: flex; align-items: center; justify-content: center;
+    padding: 3rem 2rem; border-radius: var(--radius-sm); border: 0.5px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+  .logo-box::after {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(circle at center, rgba(201,168,76,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .logo-initials { font-family: 'Cormorant Garamond', serif; font-size: 64px; font-weight: 300; letter-spacing: 4px; line-height: 1; text-align: center; }
+  .logo-tagline { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; margin-top: 10px; text-align: center; opacity: 0.5; font-weight: 300; }
+
+  .swatches { display: flex; gap: 12px; flex-wrap: wrap; }
+  .swatch-chip { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .swatch { width: 58px; height: 58px; border-radius: var(--radius-sm); border: 0.5px solid rgba(255,255,255,0.08); }
+  .swatch-lbl { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+  .swatch-hex { font-size: 10px; color: var(--text-dim); letter-spacing: 0.5px; }
+
+  .mood-row { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin-top: 1rem; }
+  .mood-block { border-radius: var(--radius-sm); padding: 0.75rem; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; height: 52px; text-align: center; }
+
+  .font-row { padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 0.5px solid var(--border); }
+  .font-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .font-role { font-size: 10px; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px; }
+  .font-nm { font-size: 18px; font-weight: 400; }
+  .font-s { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+  .font-u { font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+
+  .taglines { display: flex; flex-direction: column; gap: 8px; }
+  .tagline { padding: 12px 16px; background: var(--dark-3); border-radius: var(--radius-sm); border: 0.5px solid rgba(240,237,230,0.06); font-family: 'Cormorant Garamond', serif; font-size: 17px; font-style: italic; font-weight: 300; color: var(--text); line-height: 1.4; transition: border-color 0.2s; }
+  .tagline:hover { border-color: rgba(201,168,76,0.3); }
+
+  .brand-voice { font-size: 14px; line-height: 1.8; color: var(--text-muted); font-weight: 300; margin-bottom: 1rem; }
+  .ptags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .ptag { padding: 5px 14px; border: 0.5px solid var(--border); border-radius: 20px; font-size: 12px; color: var(--gold); letter-spacing: 0.5px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .result-card { animation: fadeUp 0.4s ease forwards; opacity: 0; }
+  .result-card:nth-child(2) { animation-delay: 0.05s; }
+  .result-card:nth-child(3) { animation-delay: 0.1s; }
+  .result-card:nth-child(4) { animation-delay: 0.15s; }
+  .result-card:nth-child(5) { animation-delay: 0.2s; }
+
+  @media (max-width: 480px) { .container { padding: 2rem 1rem 3rem; } .header h1 { font-size: 32px; } .card { padding: 1.25rem; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="eyebrow">AI Powered</div>
+    <h1>Brand Kit Generator</h1>
+    <p>Complete brand identity in seconds</p>
+    <div class="free-badge">
+      <span>Free uses:</span>
+      <div class="free-dots">
+        <div class="dot" id="d0"></div>
+        <div class="dot" id="d1"></div>
+        <div class="dot" id="d2"></div>
+      </div>
+      <span id="freeLabel">3 remaining</span>
+    </div>
+  </div>
+
+  <div class="card" id="formCard">
+    <div class="card-label">Your Brand</div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Business name</label>
+        <input type="text" id="bizName" placeholder="e.g. Nova Tech" />
+      </div>
+      <div class="field">
+        <label>Industry</label>
+        <select id="industry">
+          <option value="">Select industry</option>
+          <option>Creative / Design</option>
+          <option>Technology / SaaS</option>
+          <option>Health &amp; Wellness</option>
+          <option>Food &amp; Beverage</option>
+          <option>Fashion &amp; Beauty</option>
+          <option>Finance &amp; Consulting</option>
+          <option>Education</option>
+          <option>Real Estate</option>
+          <option>Fitness &amp; Sports</option>
+          <option>Travel &amp; Hospitality</option>
+          <option>E-commerce</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:1rem">
+      <label>What does your business do?</label>
+      <textarea id="bizDesc" placeholder="e.g. We sell premium tech products at honest, affordable prices"></textarea>
+    </div>
+    <div class="field">
+      <label>Brand vibe</label>
+      <div class="vibe-wrap">
+        <button class="vibe-btn" onclick="pickVibe(this)">Minimal</button>
+        <button class="vibe-btn" onclick="pickVibe(this)">Bold</button>
+        <button class="vibe-btn" onclick="pickVibe(this)">Playful</button>
+        <button class="vibe-btn" onclick="pickVibe(this)">Luxury</button>
+        <button class="vibe-btn" onclick="pickVibe(this)">Earthy</button>
+        <button class="vibe-btn" onclick="pickVibe(this)">Tech</button>
+        <button class="vibe-btn" onclick="pickVibe(this)">Warm</button>
+        <button class="vibe-btn" onclick="pickVibe(this)">Elegant</button>
+      </div>
+    </div>
+    <button class="gen-btn" id="genBtn" onclick="generate()">✦ Generate Brand Kit</button>
+    <div class="prog" id="prog"><div class="prog-inner" id="progBar"></div></div>
+    <div class="err" id="errBox"></div>
+  </div>
+
+  <div id="results"></div>
+</div>
+
+<script>
+  const FREE_LIMIT = 3;
+  let vibe = '';
+  let progTimer = null;
+
+  function getUsed() { return parseInt(localStorage.getItem('bkg_used') || '0'); }
+  function setUsed(n) { localStorage.setItem('bkg_used', n); }
+
+  function getPaid() { return localStorage.getItem('bkg_paid') === 'true'; }
+  function setPaid() { localStorage.setItem('bkg_paid', 'true'); }
+
+  function updateBadge() {
+    const used = getUsed();
+    const paid = getPaid();
+    const remaining = Math.max(0, FREE_LIMIT - used);
+    for (let i = 0; i < 3; i++) {
+      document.getElementById('d' + i).classList.toggle('used', i < used && !paid);
+    }
+    if (paid) {
+      document.getElementById('freeLabel').textContent = '10 paid uses remaining';
+      document.querySelector('.free-badge').style.color = '#4CAF50';
+    } else {
+      document.getElementById('freeLabel').textContent = remaining + ' remaining';
+    }
+  }
+
+  function pickVibe(el) {
+    document.querySelectorAll('.vibe-btn').forEach(b => b.classList.remove('on'));
+    el.classList.add('on');
+    vibe = el.textContent;
+  }
+
+  function contrast(hex) {
+    try {
+      const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+      return (r*0.299 + g*0.587 + b*0.114) > 128 ? '#0A0A0F' : '#F0EDE6';
+    } catch(e) { return '#0A0A0F'; }
+  }
+
+  function startProg() {
+    let w = 0;
+    document.getElementById('prog').classList.add('on');
+    progTimer = setInterval(() => { w = Math.min(w + Math.random() * 5, 88); document.getElementById('progBar').style.width = w + '%'; }, 200);
+  }
+
+  function stopProg() {
+    clearInterval(progTimer);
+    document.getElementById('progBar').style.width = '100%';
+    setTimeout(() => { document.getElementById('prog').classList.remove('on'); document.getElementById('progBar').style.width = '0'; }, 400);
+  }
+
+  function showErr(msg) { const el = document.getElementById('errBox'); el.innerHTML = msg; el.style.display = 'block'; }
+
+  function showPaywall() {
+    document.getElementById('results').innerHTML = `
+      <div class="card result-card">
+        <div class="paywall">
+          <h2>You've used your 3 free kits</h2>
+          <p>Get 10 more brand kit generations for just $5.<br>That's $0.50 per professional brand identity.</p>
+          <button class="pay-btn" onclick="startPayment()">✦ Get 10 More — $5</button>
+          <div class="pay-note">Secure payment via Stripe · Instant access · No subscription</div>
+        </div>
+      </div>`;
+  }
+
+  function startPayment() {
+    // Redirect to Stripe payment link — replace with your real Stripe link
+    window.location.href = 'https://buy.stripe.com/YOUR_STRIPE_LINK';
+  }
+
+  async function generate() {
+    const name = document.getElementById('bizName').value.trim();
+    const industry = document.getElementById('industry').value;
+    const desc = document.getElementById('bizDesc').value.trim();
+    document.getElementById('errBox').style.display = 'none';
+
+    if (!name) { showErr('Please enter your business name.'); return; }
+    if (!industry) { showErr('Please select your industry.'); return; }
+    if (!desc) { showErr('Please describe what your business does.'); return; }
+
+    const used = getUsed();
+    const paid = getPaid();
+
+    if (!paid && used >= FREE_LIMIT) { showPaywall(); return; }
+
+    document.getElementById('genBtn').disabled = true;
+    document.getElementById('results').innerHTML = '';
+    startProg();
+
+    try {
+      const res = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ name, industry, desc, vibe: vibe || 'Modern & Professional' })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Generation failed');
+
+      setUsed(used + 1);
+      updateBadge();
+      render(data, name);
+
+    } catch(e) {
+      showErr(e.message || 'Something went wrong — please try again.');
+    } finally {
+      document.getElementById('genBtn').disabled = false;
+      stopProg();
+    }
+  }
+
+  function render(kit, name) {
+    const initials = (kit.logoInitials || name.substring(0,2)).toUpperCase();
+    const logoBg = kit.logoBg || '#0A0A0F';
+    const logoFg = kit.logoFg || '#C9A84C';
+    const palette = Array.isArray(kit.palette) ? kit.palette : [];
+
+    const swatches = palette.map(c => `<div class="swatch-chip"><div class="swatch" style="background:${c.hex}"></div><div class="swatch-lbl">${c.name}</div><div class="swatch-hex">${c.hex}</div></div>`).join('');
+    const moods = palette.slice(0,3).map((c,i) => { const l=['Primary','Accent','Surface']; return `<div class="mood-block" style="background:${c.hex};color:${contrast(c.hex)}">${l[i]||c.name}</div>`; }).join('');
+    const fonts = kit.fonts || {};
+    const fontHTML = ['display','body'].map(role => { const f=fonts[role]; if(!f) return ''; return `<div class="font-row"><div class="font-role">${role==='display'?'Display / Headlines':'Body / UI Text'}</div><div class="font-nm">${f.name}</div><div class="font-s">${f.sample}</div><div class="font-u">Use for: ${f.use}</div></div>`; }).join('');
+    const taglineHTML = (kit.taglines||[]).map(t=>`<div class="tagline">"${t}"</div>`).join('');
+    const ptagHTML = (kit.personality||[]).map(w=>`<div class="ptag">${w}</div>`).join('');
+
+    document.getElementById('results').innerHTML = `
+      <div class="card result-card"><div class="card-label">Logo Concept</div><div class="logo-box" style="background:${logoBg}"><div><div class="logo-initials" style="color:${logoFg}">${initials}</div><div class="logo-tagline" style="color:${logoFg}">${kit.logoTagline||''}</div></div></div></div>
+      <div class="card result-card"><div class="card-label">Color Palette</div><div class="swatches">${swatches}</div><div class="mood-row">${moods}</div></div>
+      <div class="card result-card"><div class="card-label">Typography</div>${fontHTML}</div>
+      <div class="card result-card"><div class="card-label">Taglines</div><div class="taglines">${taglineHTML}</div></div>
+      <div class="card result-card"><div class="card-label">Brand Personality</div><p class="brand-voice">${kit.brandVoice||''}</p><div class="ptags">${ptagHTML}</div></div>`;
+  }
+
+  updateBadge();
+</script>
+</body>
+</html>
